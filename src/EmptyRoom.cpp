@@ -9,3 +9,6 @@ EmptyRoom::EmptyRoom() {}
 void EmptyRoom::activate() {}
 
 void EmptyRoom::print() const {}
+
+void EmptyRoom::setPosition(int x, int y) {}
+

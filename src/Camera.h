@@ -14,6 +14,7 @@ public:
     Camera();
 
     void activate() override;
+    void setPosition(int x, int y) override;
     void print() const override;
 };
 

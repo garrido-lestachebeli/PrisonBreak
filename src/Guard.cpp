@@ -10,4 +10,8 @@ void Guard::detectHazard() {}
 
 void Guard::moveTowardsPlayer() {}
 
+void Guard::setPosition(int x, int y) {}
+
 void Guard::print() const {}
+
+void Guard::activate()  {}

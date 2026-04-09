@@ -8,4 +8,8 @@ void Player::move(char direction, int spaces) {}
 
 void Player::detectHazard() {}
 
+void Player::setPosition(int x, int y) {}
+
 void Player::print() const {}
+
+void Player::activate()  {}

@@ -9,3 +9,5 @@ Camera::Camera() {}
 void Camera::activate() {}
 
 void Camera::print() const {}
+
+void Camera::setPosition(int x, int y) {}

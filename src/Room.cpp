@@ -5,6 +5,12 @@
 
 #include "Room.h"
 
-Room::Room() : GridObject() {}
+Room::Room() {}
 
-Room::Room(int x, int y) : GridObject(x, y) {}
+Room::Room(int x, int y) {}
+
+void Room::activate() {}
+
+void Room::setPosition(int x, int y) {}
+
+void Room::print() const {}

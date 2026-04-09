@@ -10,3 +10,4 @@ void Exit::activate() {}
 
 void Exit::print() const {}
 
+void Exit::setPosition(int x, int y) {}

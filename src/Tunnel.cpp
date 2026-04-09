@@ -15,3 +15,7 @@ Tunnel* Tunnel::getExit() const {
 }
 
 void Tunnel::print() const {}
+
+void Tunnel::activate(){}
+
+void Tunnel::setPosition(int x, int y) {}

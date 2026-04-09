@@ -4,7 +4,13 @@
 
 #include "Character.h"
 
-Character::Character() : GridObject() {}
+Character::Character() {}
 
-Character::Character(int x, int y) : GridObject(x, y) {}
+Character::Character(int x, int y) {}
+
+void Character::activate() {}
+
+void Character::setPosition(int x, int y) {}
+
+void Character::print() const{}
 

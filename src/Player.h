@@ -13,6 +13,8 @@ public:
     void detectHazard() override;
 
     void print() const override;
+    void activate() override;
+    void setPosition(int x, int y)  override;
 };
 
 

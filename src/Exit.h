@@ -14,6 +14,7 @@ public:
 
     void activate() override;
     void print() const override;
+    void setPosition(int x, int y) override;
 };
 
 
