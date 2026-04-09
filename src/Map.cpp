@@ -21,10 +21,10 @@ Map::Map(int nGuards, int kCameras, int bExits, int mTunnelPairs){
     generateCharacterMap(nGuards);
 }
 
-void Map::generateCharacterMap(int aGuard) {
+void Map::generateCharacterMap(int nGuards) {
     constexpr int SIZE = 7;
+    constexpr int CENTER = 3;
 
-    //populate with empty rooms
     characterMap.resize(SIZE);
     for (int y = 0; y < SIZE; ++y) {
         characterMap[y].resize(SIZE);
@@ -32,14 +32,17 @@ void Map::generateCharacterMap(int aGuard) {
             characterMap[y][x] = nullptr;
         }
     }
-    populateCharacter(aGuard);
+
+    Player* player = new Player();
+    player->setPosition(CENTER, CENTER);
+    characterMap[CENTER][CENTER] = player;
+
+    populateCharacter(nGuards);
 }
 
 void Map::generateRoomMap(int bCameras, int cExits, int dTunnelPairs) {
     constexpr int SIZE = 7;
-    constexpr int CENTER = 3;
 
-    //populate with empty rooms
     roomMap.resize(SIZE);
     for (int y = 0; y < SIZE; ++y) {
         roomMap[y].resize(SIZE);
@@ -129,8 +132,15 @@ void Map::populateRoom(int n){
 }
 
 void Map::populateCharacter(int n) {
+    constexpr int CENTER = 3;
+
     for (int i = 0; i < n; ++i) {
         auto [x, y] = getRandomEmptyCellCharacterMap();
+
+        if (x == CENTER && y == CENTER) {
+            --i;
+            continue;
+        }
 
         characterMap[y][x] = new Guard();
         characterMap[y][x]->setPosition(x, y);
@@ -140,7 +150,12 @@ void Map::populateCharacter(int n) {
 void Map::populateTunnelPairs(int n) {
     for (int i = 0; i < n; ++i) {
         auto [x1, y1] = getRandomEmptyCellRoomMap();
-        auto [x2, y2] = getRandomEmptyCellRoomMap();
+        int x2, y2;
+        do {
+            auto temp = getRandomEmptyCellRoomMap();
+            x2 = temp.first;
+            y2 = temp.second;
+        } while (x2 == x1 && y2 == y1);
 
         Tunnel* t1 = new Tunnel();
         Tunnel* t2 = new Tunnel();
