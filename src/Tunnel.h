@@ -14,7 +14,7 @@ public:
     void setExit(Tunnel* exit);
     Tunnel* getExit() const;
     void activate() override;
-    void setPosition(int x, int y);
+    void setPosition(int x, int y) override;
     void print() const override;
 
 private:
