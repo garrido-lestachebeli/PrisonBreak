@@ -9,11 +9,10 @@
 
 class Player : public Character {
 public:
-    void move(char direction, int space) override;
+    void move(char direction, int spaces) override;
     void detectHazard() override;
 
-    void useBow(char direction);
-    void usePulse();
+    void print() const override;
 };
 
 

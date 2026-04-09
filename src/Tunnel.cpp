@@ -4,9 +4,14 @@
 
 #include "Tunnel.h"
 
-Tunnel::Tunnel() : exit(nullptr) {}
+Tunnel::Tunnel() : exitTunnel(nullptr) {}
 
-void Tunnel::activate() {}
+void Tunnel::setExit(Tunnel* exit) {
+    exitTunnel = exit;
+}
 
-void Tunnel::print() {}
+Tunnel* Tunnel::getExit() const {
+    return exitTunnel;
+}
 
+void Tunnel::print() const {}

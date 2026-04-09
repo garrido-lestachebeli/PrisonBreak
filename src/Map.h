@@ -6,17 +6,24 @@
 #define WUMPUSHUNT_MAP_H
 
 
-
+#include <memory>
 #include <vector>
 #include "Room.h"
 
 class Map {
 public:
-    std::vector<std::vector<char>> map;
-
-    void generate();
+    Map(int aGuards, int bCameras, int cExits, int dTunnelPairs);
+    ~Map();
     char get(int index);
     void move(Room room1, Room room2);
+    void print();
+    std::pair<int,int> getRandomEmptyCell() const;
+
+private:
+    template <typename T>
+    void populate(int n);
+    void populateTunnelPairs(int n);
+    std::vector<std::vector<GridObject*>> map;
 };
 
 

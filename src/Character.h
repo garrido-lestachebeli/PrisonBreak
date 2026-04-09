@@ -6,15 +6,15 @@
 #define WUMPUSHUNT_CHARACTER_H
 
 
-class Character {
-public:
-    int xpos;
-    int ypos;
+#include "GridObject.h"
 
+class Character : public GridObject {
+public:
     Character();
+    Character(int x, int y);
     virtual ~Character() = default;
 
-    virtual void move(char direction, int space) = 0;
+    virtual void move(char direction, int spaces) = 0;
     virtual void detectHazard() = 0;
 };
 

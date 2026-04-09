@@ -4,9 +4,10 @@
 
 #include "Guard.h"
 
-void NPC_Guard::move(char direction, int space) {}
+void Guard::move(char direction, int space) {}
 
-void NPC_Guard::detectHazard() {}
+void Guard::detectHazard() {}
 
-void NPC_Guard::moveTowardsPlayer() {}
+void Guard::moveTowardsPlayer() {}
 
+void Guard::print() const {}

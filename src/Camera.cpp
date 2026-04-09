@@ -8,4 +8,4 @@ Camera::Camera() {}
 
 void Camera::activate() {}
 
-void Camera::print() {}
+void Camera::print() const {}

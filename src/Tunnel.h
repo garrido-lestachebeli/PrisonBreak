@@ -10,12 +10,14 @@
 
 class Tunnel : public Room {
 public:
-    Tunnel* exit;
-
     Tunnel();
-
+    void setExit(Tunnel* exit);
+    Tunnel* getExit() const;
     void activate() override;
-    void print() override;
+    void print() const override;
+
+private:
+        Tunnel* exit;
 };
 
 

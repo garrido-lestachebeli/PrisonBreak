@@ -8,5 +8,5 @@ Exit::Exit() {}
 
 void Exit::activate() {}
 
-void Exit::print() {}
+void Exit::print() const {}
 

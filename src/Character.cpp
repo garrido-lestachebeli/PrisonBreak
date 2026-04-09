@@ -4,4 +4,7 @@
 
 #include "Character.h"
 
-Character::Character() : xpos(0), ypos(0) {}
+Character::Character() : GridObject() {}
+
+Character::Character(int x, int y) : GridObject(x, y) {}
+

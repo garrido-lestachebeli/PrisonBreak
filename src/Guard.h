@@ -12,6 +12,7 @@ class Guard : public Character {
 public:
     void move(char direction, int space) override;
     void detectHazard() override;
+    void print() const override;
 
     void moveTowardsPlayer();
 };
