@@ -16,15 +16,48 @@
 #include <vector>
 
 
+/************************************************************
+ * Map Constructor
+ * ----------------------------------------------------------
+ * Initializes the game map by first generating the static
+ * room layout, then placing all characters.
+ ************************************************************/
 Map::Map(int nGuards, int kCameras, int bExits, int mTunnelPairs){
     generateRoomMap(kCameras, bExits, mTunnelPairs);
     generateCharacterMap(nGuards);
 }
 
-void Map::generateCharacterMap(int nGuards) {
+/************************************************************
+ * Map Destructor
+ * ----------------------------------------------------------
+ * Frees all dynamically allocated Room and Character objects.
+ ************************************************************/
+Map::~Map(){
+    for (auto& row : roomMap) {
+        for (auto& cell : row) {
+            delete cell;
+        }
+    }
+
+    for (auto& row : characterMap) {
+        for (auto& cell : row) {
+            delete cell;
+        }
+    }
+}
+
+/************************************************************
+ * generateCharacterMap
+ * ----------------------------------------------------------
+ * Initializes the character grid, places the player in the
+ * center of the map, and randomly populates guards in empty
+ * cells.
+ ************************************************************/
+void Map::generateCharacterMap(int nGuards){
     constexpr int SIZE = 7;
     constexpr int CENTER = 3;
 
+    /* Initialize character grid with nullptrs */
     characterMap.resize(SIZE);
     for (int y = 0; y < SIZE; ++y) {
         characterMap[y].resize(SIZE);
@@ -33,16 +66,25 @@ void Map::generateCharacterMap(int nGuards) {
         }
     }
 
+    /* Create and place player at the center */
     Player* player = new Player();
     player->setPosition(CENTER, CENTER);
     characterMap[CENTER][CENTER] = player;
 
+    /* Populate guards in remaining empty cells */
     populateCharacter(nGuards);
 }
 
-void Map::generateRoomMap(int bCameras, int cExits, int dTunnelPairs) {
+/************************************************************
+ * generateRoomMap
+ * ----------------------------------------------------------
+ * Initializes the static room grid with EmptyRoom objects,
+ * then replaces some with Camera, Exit, and Tunnel rooms.
+ ************************************************************/
+void Map::generateRoomMap(int bCameras, int cExits, int dTunnelPairs){
     constexpr int SIZE = 7;
 
+    /* Fill entire map with EmptyRoom objects */
     roomMap.resize(SIZE);
     for (int y = 0; y < SIZE; ++y) {
         roomMap[y].resize(SIZE);
@@ -51,49 +93,56 @@ void Map::generateRoomMap(int bCameras, int cExits, int dTunnelPairs) {
             roomMap[y][x]->setPosition(x, y);
         }
     }
+
+    /* Populate special rooms */
     populateRoom<Camera>(bCameras);
     populateRoom<Exit>(cExits);
     populateTunnelPairs(dTunnelPairs);
 }
 
-void Map::move(int x1, int y1, int x2, int y2){
+/************************************************************
+ * move
+ * ----------------------------------------------------------
+ * Moves a character from (x1, y1) to (x2, y2) if the move
+ * is valid. After movement, activates the room at the
+ * destination location.
+ ************************************************************/
+void Map::move(int x1, int y1, int x2, int y2)
+{
     constexpr int SIZE = 7;
 
+    /* Bounds checking */
     if (x1 < 0 || x1 >= SIZE || y1 < 0 || y1 >= SIZE ||
         x2 < 0 || x2 >= SIZE || y2 < 0 || y2 >= SIZE) {
         return;
         }
 
+    /* Ensure a character exists at the source */
     Character* character = characterMap[y1][x1];
     if (character == nullptr) {
         return;
     }
 
+    /* Destination must be unoccupied */
     if (characterMap[y2][x2] != nullptr) {
         return;
     }
 
+    /* Move character */
     characterMap[y1][x1] = nullptr;
     characterMap[y2][x2] = character;
     character->setPosition(x2, y2);
 
+    /* Activate the room at the new location */
     roomMap[y2][x2]->activate();
 }
 
-Map::~Map()
-{
-    for (auto& row : roomMap) {
-        for (auto& cell : row) {
-            delete cell;
-        }
-    }
-    for (auto& row : characterMap) {
-        for (auto& cell : row) {
-            delete cell;
-        }
-    }
-}
-
+/************************************************************
+ * getRandomEmptyCellRoomMap
+ * ----------------------------------------------------------
+ * Returns the coordinates of a random cell containing an
+ * EmptyRoom. Used for placing special room objects.
+ ************************************************************/
 std::pair<int,int> Map::getRandomEmptyCellRoomMap() const{
     constexpr int SIZE = 7;
 
@@ -107,6 +156,12 @@ std::pair<int,int> Map::getRandomEmptyCellRoomMap() const{
     }
 }
 
+/************************************************************
+ * getRandomEmptyCellCharacterMap
+ * ----------------------------------------------------------
+ * Returns the coordinates of a random unoccupied character
+ * cell (nullptr). Used for placing guards.
+ ************************************************************/
 std::pair<int,int> Map::getRandomEmptyCellCharacterMap() const{
     constexpr int SIZE = 7;
 
@@ -114,14 +169,21 @@ std::pair<int,int> Map::getRandomEmptyCellCharacterMap() const{
         int x = rand() % SIZE;
         int y = rand() % SIZE;
 
-        if (characterMap[y][x] == nullptr){
+        if (characterMap[y][x] == nullptr) {
             return {x, y};
         }
     }
 }
 
+/************************************************************
+ * populateRoom<T>
+ * ----------------------------------------------------------
+ * Template function that replaces EmptyRoom cells with
+ * instances of a specific Room subtype.
+ ************************************************************/
 template <typename T>
-void Map::populateRoom(int n){
+void Map::populateRoom(int n)
+{
     for (int i = 0; i < n; ++i) {
         auto [x, y] = getRandomEmptyCellRoomMap();
 
@@ -131,7 +193,13 @@ void Map::populateRoom(int n){
     }
 }
 
-void Map::populateCharacter(int n) {
+/************************************************************
+ * populateCharacter
+ * ----------------------------------------------------------
+ * Randomly places Guard objects in empty character cells,
+ * ensuring the player’s starting position is not overwritten.
+ ************************************************************/
+void Map::populateCharacter(int n){
     constexpr int CENTER = 3;
 
     for (int i = 0; i < n; ++i) {
@@ -147,9 +215,16 @@ void Map::populateCharacter(int n) {
     }
 }
 
-void Map::populateTunnelPairs(int n) {
+/************************************************************
+ * populateTunnelPairs
+ * ----------------------------------------------------------
+ * Places pairs of Tunnel rooms in distinct EmptyRoom cells
+ * and links each pair together.
+ ************************************************************/
+void Map::populateTunnelPairs(int n){
     for (int i = 0; i < n; ++i) {
         auto [x1, y1] = getRandomEmptyCellRoomMap();
+
         int x2, y2;
         do {
             auto temp = getRandomEmptyCellRoomMap();
@@ -174,7 +249,14 @@ void Map::populateTunnelPairs(int n) {
     }
 }
 
-Room* Map::getRoom(int index) const{
+/************************************************************
+ * getRoom / getCharacter
+ * ----------------------------------------------------------
+ * Provides linear index access to the room and character
+ * grids using row-major ordering.
+ ************************************************************/
+Room* Map::getRoom(int index) const
+{
     constexpr int SIZE = 7;
     constexpr int TOTAL = SIZE * SIZE;
 
@@ -187,7 +269,6 @@ Room* Map::getRoom(int index) const{
 
     return roomMap[y][x];
 }
-
 Character* Map::getCharacter(int index) const{
     constexpr int SIZE = 7;
     constexpr int TOTAL = SIZE * SIZE;
