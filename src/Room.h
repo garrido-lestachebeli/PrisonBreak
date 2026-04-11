@@ -4,16 +4,16 @@
 
 #ifndef WUMPUSHUNT_ROOM_H
 #define WUMPUSHUNT_ROOM_H
-
+class Map;
 
 class Room {
 public:
-    Room();
-    Room(int x, int y);
+    Room() = default;
     virtual ~Room() = default;
-    virtual void activate() = 0;
+    virtual void activate(Map& map) = 0;
     virtual void setPosition(int x, int y) = 0;
     virtual void print() const = 0;
+    virtual void printPhrase() const = 0;
 };
 
 

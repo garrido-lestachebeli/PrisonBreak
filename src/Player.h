@@ -6,6 +6,7 @@
 #define WUMPUSHUNT_PLAYER_H
 
 #include "Character.h"
+#include <utility>
 
 class Player : public Character {
 public:
@@ -13,8 +14,10 @@ public:
     void detectHazard() override;
 
     void print() const override;
-    void activate() override;
     void setPosition(int x, int y)  override;
+
+    std::pair<int, int> getPosition() override;
+    void printPhrase() const override;
 };
 
 

@@ -12,9 +12,10 @@ class EmptyRoom : public Room{
 public:
     EmptyRoom();
 
-    void activate() override;
+    void activate(Map& map) override;
     void print() const override;
     void setPosition(int x, int y) override;
+    void printPhrase() const override;
 };
 
 

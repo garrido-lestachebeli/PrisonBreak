@@ -15,8 +15,9 @@ public:
     void moveTowardsPlayer();
 
     void print() const override;
-    void activate()  override;
     void setPosition(int x, int y)  override;
+    void printPhrase() const override;
+    std::pair<int, int> getPosition() override;
 };
 
 

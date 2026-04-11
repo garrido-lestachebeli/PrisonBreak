@@ -13,10 +13,10 @@ public:
     Tunnel();
     void setExit(Tunnel* exit);
     Tunnel* getExit() const;
-    void activate() override;
+    void activate(Map& map) override;
     void setPosition(int x, int y) override;
     void print() const override;
-
+    void printPhrase() const override;
 private:
         Tunnel* exit;
 };

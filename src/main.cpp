@@ -1,3 +1,4 @@
+#include "GameManager.h"
 //
 // Created by garrido-lestachebeli on 3/23/2026.
 //
@@ -12,7 +13,7 @@ int main() {
     cout << "You are an inmate attempting to escape a high-security prison.\n";
     cout << "The prison is a maze of rooms\n";
     cout << "Some rooms are interconnected tunnels, others are watched by cameras.\n";
-    cout << "A guard is on patrol — and one mistake could end everything.\n\n";
+    cout << "A guard is on patrol, and one mistake could end everything.\n\n";
 
     cout << "------------- OBJECTIVE -------------\n";
     cout << "- Navigate the prison and find the escape route.\n";
@@ -43,8 +44,13 @@ int main() {
     cout << "- Q              : Quit the game\n\n";
 
     cout << "Move carefully. One wrong step could alert the guard.\n";
-    cout << "Good luck — your freedom depends on it.\n\n";
+    cout << "Good luck, your freedom depends on it.\n\n";
 
     cout << "============================================\n";
-    cout << "Press ENTER to begin your escape...\n";
+
+    GameManager game;
+
+    game.gameplayLoop();
+
+    return 0;
 }

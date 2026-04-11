@@ -1,7 +1,6 @@
 //
 // Created by garrido-lestachebeli on 4/8/2026.
 //
-
 #include "Map.h"
 #include "Player.h"
 #include "Guard.h"
@@ -46,6 +45,42 @@ Map::~Map(){
     }
 }
 
+void Map::print() {
+    if (characterMap.empty()) return;
+
+    int rows = characterMap.size();
+    int cols = characterMap[0].size();
+
+    // Print top border
+    std::cout << " ";
+    for (int c = 0; c < cols; ++c) {
+        std::cout << "___";
+    }
+    std::cout << "\n";
+
+    for (int r = 0; r < rows; ++r) {
+        std::cout << "|";
+        for (int c = 0; c < cols; ++c) {
+            if (characterMap[r][c] != nullptr) {
+                std::cout << " ";
+                characterMap[r][c]->print();
+                std::cout << " ";
+            } else {
+                std::cout << "   ";
+            }
+            std::cout << "|";
+        }
+        std::cout << "\n";
+
+        // Bottom line of the row
+        std::cout << "|";
+        for (int c = 0; c < cols; ++c) {
+            std::cout << "___|";
+        }
+        std::cout << "\n";
+    }
+}
+
 /************************************************************
  * generateCharacterMap
  * ----------------------------------------------------------
@@ -67,9 +102,7 @@ void Map::generateCharacterMap(int nGuards){
     }
 
     /* Create and place player at the center */
-    Player* player = new Player();
     player->setPosition(CENTER, CENTER);
-    characterMap[CENTER][CENTER] = player;
 
     /* Populate guards in remaining empty cells */
     populateCharacter(nGuards);
@@ -134,7 +167,7 @@ void Map::move(int x1, int y1, int x2, int y2)
     character->setPosition(x2, y2);
 
     /* Activate the room at the new location */
-    roomMap[y2][x2]->activate();
+    roomMap[y2][x2]->activate(*this);
 }
 
 /************************************************************
@@ -182,8 +215,7 @@ std::pair<int,int> Map::getRandomEmptyCellCharacterMap() const{
  * instances of a specific Room subtype.
  ************************************************************/
 template <typename T>
-void Map::populateRoom(int n)
-{
+void Map::populateRoom(int n){
     for (int i = 0; i < n; ++i) {
         auto [x, y] = getRandomEmptyCellRoomMap();
 
@@ -281,4 +313,13 @@ Character* Map::getCharacter(int index) const{
     int y = index / SIZE;
 
     return characterMap[y][x];
+}
+
+std::pair<int,int> Map::getOtherTunnel(int x, int y) {
+    for (auto& pos : tunnelPositions_) {
+        if (pos.first != x || pos.second != y) {
+            return pos;
+        }
+    }
+    return {x, y}; // fallback
 }
