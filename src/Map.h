@@ -17,9 +17,9 @@ public:
     Map(int aGuards, int bCameras, int cExits, int dTunnelPairs);
 
     ~Map();
-    Room* getRoom(int index) const;
-    Character* getCharacter(int index) const;
-
+    Room* getRoom(int x, int y) const;
+    Character* getCharacter(int x, int y) const;
+    Player* getPlayer() const;
     void move(int x1, int y1, int x2, int y2);
     std::pair<int,int> getRandomEmptyCellRoomMap() const;
     std::pair<int,int> getRandomEmptyCellCharacterMap() const;
@@ -41,7 +41,7 @@ private:
     void populateCharacter(int n);
     std::vector<std::vector<Room*>> roomMap;
     std::vector<std::vector<Character*>> characterMap;
-    Player *player = new Player;
+    Player *player;
     std::vector<std::pair<int,int>> tunnelPositions_;
 };
 

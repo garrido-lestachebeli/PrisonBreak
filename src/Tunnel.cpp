@@ -20,7 +20,7 @@ Tunnel* Tunnel::getExit() const {
 void Tunnel::print() const {}
 
 void Tunnel::activate(Map& map) {
-    Character* player = map.getCharacter(0);
+    Player* player = map.getPlayer();
     auto [x, y] = player->getPosition();
 
     auto [tx, ty] = map.getOtherTunnel(x, y);

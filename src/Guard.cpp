@@ -9,11 +9,9 @@ void Guard::move(char direction, int space) {}
 
 void Guard::detectHazard() {}
 
-void Guard::moveTowardsPlayer() {}
-
 void Guard::setPosition(int x, int y) {}
 
-void Guard::print() const {}
+void Guard::print() const {std::cout << "G" ; }
 
 void Guard::printPhrase() const {std::cout<<"You see the glow of a flashlight up ahead..."<<std::endl;}
 

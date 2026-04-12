@@ -10,7 +10,7 @@
 Camera::Camera() {}
 
 void Camera::activate(Map& map) {
-    Character* player = map.getCharacter(0);
+    Player* player = map.getPlayer();
     auto [x, y] = player->getPosition();
 
     std::cout << "A camera spots you! Guards are alerted!\n";

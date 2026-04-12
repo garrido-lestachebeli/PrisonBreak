@@ -22,6 +22,8 @@
  * room layout, then placing all characters.
  ************************************************************/
 Map::Map(int nGuards, int kCameras, int bExits, int mTunnelPairs){
+    player = new Player();
+
     generateRoomMap(kCameras, bExits, mTunnelPairs);
     generateCharacterMap(nGuards);
 }
@@ -51,31 +53,14 @@ void Map::print() {
     int rows = characterMap.size();
     int cols = characterMap[0].size();
 
-    // Print top border
-    std::cout << " ";
-    for (int c = 0; c < cols; ++c) {
-        std::cout << "___";
-    }
-    std::cout << "\n";
-
     for (int r = 0; r < rows; ++r) {
-        std::cout << "|";
         for (int c = 0; c < cols; ++c) {
             if (characterMap[r][c] != nullptr) {
-                std::cout << " ";
-                characterMap[r][c]->print();
-                std::cout << " ";
+                characterMap[r][c]->print();  // prints P or G
             } else {
-                std::cout << "   ";
+                std::cout << "."; // hidden room
             }
-            std::cout << "|";
-        }
-        std::cout << "\n";
-
-        // Bottom line of the row
-        std::cout << "|";
-        for (int c = 0; c < cols; ++c) {
-            std::cout << "___|";
+            std::cout << " ";
         }
         std::cout << "\n";
     }
@@ -103,6 +88,7 @@ void Map::generateCharacterMap(int nGuards){
 
     /* Create and place player at the center */
     player->setPosition(CENTER, CENTER);
+    characterMap[CENTER][CENTER] = player;
 
     /* Populate guards in remaining empty cells */
     populateCharacter(nGuards);
@@ -140,34 +126,24 @@ void Map::generateRoomMap(int bCameras, int cExits, int dTunnelPairs){
  * is valid. After movement, activates the room at the
  * destination location.
  ************************************************************/
-void Map::move(int x1, int y1, int x2, int y2)
-{
-    constexpr int SIZE = 7;
+void Map::move(int x1, int y1, int x2, int y2) {
+    int rows = (int)characterMap.size();
+    int cols = (int)characterMap[0].size();
 
-    /* Bounds checking */
-    if (x1 < 0 || x1 >= SIZE || y1 < 0 || y1 >= SIZE ||
-        x2 < 0 || x2 >= SIZE || y2 < 0 || y2 >= SIZE) {
+    // bounds check
+    if (x2 < 0 || x2 >= cols || y2 < 0 || y2 >= rows)
         return;
-        }
 
-    /* Ensure a character exists at the source */
-    Character* character = characterMap[y1][x1];
-    if (character == nullptr) {
+    Character* c = characterMap[y1][x1];
+    if (!c) return;
+
+    if (characterMap[y2][x2] != nullptr)
         return;
-    }
 
-    /* Destination must be unoccupied */
-    if (characterMap[y2][x2] != nullptr) {
-        return;
-    }
-
-    /* Move character */
+    characterMap[y2][x2] = c;
     characterMap[y1][x1] = nullptr;
-    characterMap[y2][x2] = character;
-    character->setPosition(x2, y2);
 
-    /* Activate the room at the new location */
-    roomMap[y2][x2]->activate(*this);
+    c->setPosition(x2, y2);
 }
 
 /************************************************************
@@ -242,8 +218,9 @@ void Map::populateCharacter(int n){
             continue;
         }
 
-        characterMap[y][x] = new Guard();
-        characterMap[y][x]->setPosition(x, y);
+        Guard* g = new Guard();
+        g->setPosition(x, y);
+        characterMap[y][x] = g;
     }
 }
 
@@ -287,32 +264,22 @@ void Map::populateTunnelPairs(int n){
  * Provides linear index access to the room and character
  * grids using row-major ordering.
  ************************************************************/
-Room* Map::getRoom(int index) const
-{
-    constexpr int SIZE = 7;
-    constexpr int TOTAL = SIZE * SIZE;
-
-    if (index < 0 || index >= TOTAL) {
-        return nullptr;
-    }
-
-    int x = index % SIZE;
-    int y = index / SIZE;
-
+Room* Map::getRoom(int x, int y) const {
     return roomMap[y][x];
 }
-Character* Map::getCharacter(int index) const{
-    constexpr int SIZE = 7;
-    constexpr int TOTAL = SIZE * SIZE;
 
-    if (index < 0 || index >= TOTAL) {
+Character* Map::getCharacter(int x, int y) const {
+    int rows = (int)characterMap.size();
+    int cols = (int)characterMap[0].size();
+
+    if (x < 0 || x >= cols || y < 0 || y >= rows)
         return nullptr;
-    }
-
-    int x = index % SIZE;
-    int y = index / SIZE;
 
     return characterMap[y][x];
+}
+
+Player* Map::getPlayer() const {
+    return player;
 }
 
 std::pair<int,int> Map::getOtherTunnel(int x, int y) {

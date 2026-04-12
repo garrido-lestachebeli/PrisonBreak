@@ -47,6 +47,7 @@ int main() {
     cout << "Good luck, your freedom depends on it.\n\n";
 
     cout << "============================================\n";
+    srand(time(0));
 
     GameManager game;
 
