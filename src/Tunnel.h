@@ -19,6 +19,8 @@ public:
     void printPhrase() const override;
 private:
         Tunnel* exit;
+    int x;
+    int y;
 };
 
 

@@ -14,6 +14,8 @@ public:
     virtual void setPosition(int x, int y) = 0;
     virtual void print() const = 0;
     virtual void printPhrase() const = 0;
+protected:
+    int x, y;
 };
 
 

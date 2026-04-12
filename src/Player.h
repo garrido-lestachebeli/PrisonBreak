@@ -8,8 +8,15 @@
 #include "Character.h"
 #include <utility>
 
+enum class WeaponType {
+    EMP,
+    FLASHBANG
+};
+
 class Player : public Character {
 public:
+    Player(int empAmmo = 3, int flashbangAmmo = 2);
+    
     void move(char direction, int spaces) override;
     void detectHazard() override;
 
@@ -18,6 +25,14 @@ public:
 
     std::pair<int, int> getPosition() override;
     void printPhrase() const override;
+    
+    bool useWeapon(WeaponType type);
+    int getEmpAmmo() const { return empAmmo_; }
+    int getFlashbangAmmo() const { return flashbangAmmo_; }
+    
+private:
+    int empAmmo_;
+    int flashbangAmmo_;
 };
 
 

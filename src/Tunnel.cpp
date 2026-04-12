@@ -7,7 +7,10 @@
 #include "Character.h"
 #include "Map.h"
 
-Tunnel::Tunnel() : exit(nullptr) {}
+Tunnel::Tunnel() : exit(nullptr) {
+    this->x = 0;
+    this->y = 0;
+}
 
 void Tunnel::setExit(Tunnel* exitTunnel) {
     exit = exitTunnel;
@@ -30,6 +33,6 @@ void Tunnel::activate(Map& map) {
     map.move(x, y, tx, ty);
 }
 
-void Tunnel::setPosition(int x, int y) {}
+void Tunnel::setPosition(int x2, int y2) {x=x2; y=y2;}
 
 void Tunnel::printPhrase() const {std::cout<<"You feel a draft from somewhere..."<<std::endl;}

@@ -6,8 +6,9 @@
 
 #include "Exit.h"
 #include "Guard.h"
+#include "Camera.h"
 
-GameManager::GameManager() : map_(3,2,1,1) {
+GameManager::GameManager(int empAmmo, int flashbangAmmo) : map_(2, 2, 1, 1, empAmmo, flashbangAmmo) {
 }
 
 GameManager::~GameManager() {}
@@ -16,38 +17,51 @@ void GameManager::gameplayLoop() {
     while (true) {
         // 1) print map
         map_.print();
+        
+        // 2) display ammo
+        displayAmmo();
 
-        // 2) input
+        // 3) input
         char input = getPlayerInput();
-        handlePlayerMove(input);
+        
+        if (input == 'e' || input == 'f') {
+            handleWeaponUse(input);
+        } else {
+            handlePlayerMove(input);
+        }
 
-        // 3) activate room
+        // 4) activate room
         auto [x, y] = map_.getPlayer()->getPosition();
         Room* room = map_.getRoom(x, y);
-        room->activate(map_);
+        if (room) {
+            room->activate(map_);
+        }
 
-        // 4) check lose
+        // 5) check lose
         if (checkLose()) {
             std::cout << "You were caught by a guard. Game Over.\n";
             break;
         }
 
-        // 5) move guards
+        // 6) move guards
         moveGuards();
 
-        // 6) check lose again
+        // 7) check lose again
         if (checkLose()) {
             std::cout << "A guard caught you. Game Over.\n";
             break;
         }
 
-        // 7) check win
+        // 8) check win
         if (checkWin()) {
             std::cout << "You found the exit! You win!\n";
             break;
         }
 
-        // 8) surroundings
+        // 9) update turn counters
+        updateTurnCounters();
+
+        // 10) surroundings
         checkSurroundings();
     }
 }
@@ -69,6 +83,102 @@ void GameManager::handlePlayerMove(char input) {
     }
 
     map_.move(x, y, newX, newY);
+}
+
+void GameManager::handleWeaponUse(char input) {
+    Player* player = map_.getPlayer();
+    
+    if (input == 'e') {
+        // EMP
+        if (player->useWeapon(WeaponType::EMP)) {
+            useEMP();
+            std::cout << "EMP pulse activated! Cameras in 1-block radius deactivated for 2 turns.\n";
+        } else {
+            std::cout << "No EMP ammo remaining!\n";
+        }
+    } else if (input == 'f') {
+        // Flashbang
+        if (player->useWeapon(WeaponType::FLASHBANG)) {
+            useFlashbang();
+            std::cout << "Flashbang deployed! Guards stunned for 4 turns.\n";
+        } else {
+            std::cout << "No flashbang ammo remaining!\n";
+        }
+    }
+}
+
+void GameManager::useEMP() {
+    auto [px, py] = map_.getPlayer()->getPosition();
+    
+    // Check all rooms in 1-block radius
+    for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+            int x = px + dx;
+            int y = py + dy;
+            
+            Room* room = map_.getRoom(x, y);
+            if (room) {
+                Camera* camera = dynamic_cast<Camera*>(room);
+                if (camera) {
+                    camera->deactivate(2);
+                }
+            }
+        }
+    }
+}
+
+void GameManager::useFlashbang() {
+    auto [px, py] = map_.getPlayer()->getPosition();
+    
+    // Stun all guards in 1-block radius
+    for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+            int x = px + dx;
+            int y = py + dy;
+            
+            Character* character = map_.getCharacter(x, y);
+            if (character) {
+                Guard* guard = dynamic_cast<Guard*>(character);
+                if (guard) {
+                    guard->stun(4);
+                }
+            }
+        }
+    }
+}
+
+void GameManager::updateTurnCounters() {
+    // Update all cameras
+    for (int y = 0; y < 7; y++) {
+        for (int x = 0; x < 7; x++) {
+            Room* room = map_.getRoom(x, y);
+            if (room) {
+                Camera* camera = dynamic_cast<Camera*>(room);
+                if (camera) {
+                    camera->updateTurn();
+                }
+            }
+        }
+    }
+    
+    // Update all guards
+    for (int y = 0; y < 7; y++) {
+        for (int x = 0; x < 7; x++) {
+            Character* character = map_.getCharacter(x, y);
+            if (character) {
+                Guard* guard = dynamic_cast<Guard*>(character);
+                if (guard) {
+                    guard->updateTurn();
+                }
+            }
+        }
+    }
+}
+
+void GameManager::displayAmmo() {
+    Player* player = map_.getPlayer();
+    std::cout << "Ammo - EMP: " << player->getEmpAmmo() 
+              << ", Flashbang: " << player->getFlashbangAmmo() << "\n";
 }
 
 bool GameManager::checkWin() {
@@ -137,6 +247,11 @@ void GameManager::moveGuards() {
     }
 
     for (Guard* guard : guards) {
+        // Skip stunned guards
+        if (guard->isStunned()) {
+            continue;
+        }
+        
         auto [gx, gy] = guard->getPosition();
 
         int newX = gx;
@@ -182,7 +297,7 @@ void GameManager::moveGuards() {
 
 char GameManager::getPlayerInput() {
     char input;
-    std::cout << "Move (WASD): ";
+    std::cout << "Move (WASD) or use weapon (E=EMP, F=Flashbang): ";
     std::cin >> input;
     return tolower(input);
 }

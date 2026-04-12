@@ -17,6 +17,13 @@ public:
     void setPosition(int x, int y) override;
     void print() const override;
     void printPhrase() const override;
+    
+    void deactivate(int turns);
+    void updateTurn();
+    bool isDeactivated() const { return deactivatedTurns_ > 0; }
+    
+private:
+    int deactivatedTurns_;
 };
 
 

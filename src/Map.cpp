@@ -21,8 +21,8 @@
  * Initializes the game map by first generating the static
  * room layout, then placing all characters.
  ************************************************************/
-Map::Map(int nGuards, int kCameras, int bExits, int mTunnelPairs){
-    player = new Player();
+Map::Map(int nGuards, int kCameras, int bExits, int mTunnelPairs, int empAmmo, int flashbangAmmo){
+    player = new Player(empAmmo, flashbangAmmo);
 
     generateRoomMap(kCameras, bExits, mTunnelPairs);
     generateCharacterMap(nGuards);
@@ -137,7 +137,7 @@ void Map::move(int x1, int y1, int x2, int y2) {
     Character* c = characterMap[y1][x1];
     if (!c) return;
 
-    if (characterMap[y2][x2] != nullptr)
+    if (characterMap[y2][x2] != nullptr && characterMap[y2][x2] != player)
         return;
 
     characterMap[y2][x2] = c;
@@ -265,6 +265,12 @@ void Map::populateTunnelPairs(int n){
  * grids using row-major ordering.
  ************************************************************/
 Room* Map::getRoom(int x, int y) const {
+    int rows = (int)roomMap.size();
+    int cols = (int)roomMap[0].size();
+
+    if (x < 0 || x >= cols || y < 0 || y >= rows)
+        return nullptr;
+
     return roomMap[y][x];
 }
 

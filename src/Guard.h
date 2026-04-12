@@ -10,14 +10,22 @@
 
 class Guard : public Character {
 public:
+    Guard();
+
     void move(char direction, int space) override;
     void detectHazard() override;
-    void moveTowardsPlayer();
 
     void print() const override;
     void setPosition(int x, int y)  override;
     void printPhrase() const override;
     std::pair<int, int> getPosition() override;
+    
+    void stun(int turns);
+    void updateTurn();
+    bool isStunned() const { return stunnedTurns_ > 0; }
+    
+private:
+    int stunnedTurns_;
 };
 
 

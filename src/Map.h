@@ -14,7 +14,7 @@ class Room;
 
 class Map {
 public:
-    Map(int aGuards, int bCameras, int cExits, int dTunnelPairs);
+    Map(int aGuards, int bCameras, int cExits, int dTunnelPairs, int empAmmo = 3, int flashbangAmmo = 2);
 
     ~Map();
     Room* getRoom(int x, int y) const;
