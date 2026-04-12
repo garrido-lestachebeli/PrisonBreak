@@ -18,11 +18,20 @@ void GameManager::gameplayLoop() {
         // 1) print map
         map_.print();
         
-        // 2) display ammo
+        // 2) display surroundings (moved here)
+        checkSurroundings();
+        
+        // 3) display ammo
         displayAmmo();
 
         // 3) input
         char input = getPlayerInput();
+        
+        // Handle quit
+        if (input == 'q') {
+            std::cout << "Quitting game...\n";
+            break;
+        }
         
         if (input == 'e' || input == 'f') {
             handleWeaponUse(input);
@@ -60,9 +69,6 @@ void GameManager::gameplayLoop() {
 
         // 9) update turn counters
         updateTurnCounters();
-
-        // 10) surroundings
-        checkSurroundings();
     }
 }
 
@@ -297,7 +303,7 @@ void GameManager::moveGuards() {
 
 char GameManager::getPlayerInput() {
     char input;
-    std::cout << "Move (WASD) or use weapon (E=EMP, F=Flashbang): ";
+    std::cout << "Move (WASD) or use weapon (E=EMP, F=Flashbang, Q=Quit): ";
     std::cin >> input;
     return tolower(input);
 }

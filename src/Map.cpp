@@ -255,6 +255,10 @@ void Map::populateTunnelPairs(int n){
 
         roomMap[y1][x1] = t1;
         roomMap[y2][x2] = t2;
+        
+        // Store tunnel positions for teleportation
+        tunnelPositions_.push_back({x1, y1});
+        tunnelPositions_.push_back({x2, y2});
     }
 }
 
