@@ -1,36 +1,40 @@
 #include "GameManager.h"
 
 #include <cstdlib>
-#include <ctime>
 #include <iostream>
+#include <limits>
 
 #include "Exit.h"
 #include "Guard.h"
 #include "Camera.h"
 
-GameManager::GameManager(int empAmmo, int flashbangAmmo) : map_(2, 2, 1, 1, empAmmo, flashbangAmmo) {
+GameManager::GameManager(int empAmmo, int flashbangAmmo) : map_(2, 2, 1, 1, empAmmo, flashbangAmmo), debugMode_(false) {
 }
 
 GameManager::~GameManager() {}
 
 void GameManager::gameplayLoop() {
     while (true) {
-        // 1) print map
         map_.print();
         
-        // 2) display surroundings (moved here)
-        checkSurroundings();
+        if (debugMode_) {
+            printRoomMap();
+        }
         
-        // 3) display ammo
+        checkSurroundings();
         displayAmmo();
 
-        // 3) input
         char input = getPlayerInput();
-        
-        // Handle quit
+
         if (input == 'q') {
-            std::cout << "Quitting game...\n";
+            std::cout<<"Quitting game...\n";
             break;
+        }
+        
+        if (input == 'm') {
+            debugMode_ = !debugMode_;
+            std::cout << "Debug mode " << (debugMode_ ? "enabled" : "disabled") << "\n";
+            continue;
         }
         
         if (input == 'e' || input == 'f') {
@@ -39,35 +43,27 @@ void GameManager::gameplayLoop() {
             handlePlayerMove(input);
         }
 
-        // 4) activate room
         auto [x, y] = map_.getPlayer()->getPosition();
         Room* room = map_.getRoom(x, y);
         if (room) {
             room->activate(map_);
         }
 
-        // 5) check lose
-        if (checkLose()) {
-            std::cout << "You were caught by a guard. Game Over.\n";
-            break;
-        }
+        if (checkLose()) {std::cout << "You were caught by a guard. Game Over.\n";
+            break;}
 
-        // 6) move guards
         moveGuards();
-
-        // 7) check lose again
-        if (checkLose()) {
-            std::cout << "A guard caught you. Game Over.\n";
-            break;
-        }
-
-        // 8) check win
+        if (checkLose()) {std::cout << "A guard caught you. Game Over.\n";
+            break;}
         if (checkWin()) {
-            std::cout << "You found the exit! You win!\n";
+            std::cout << "*         VICTORY *\n";
+            std::cout << "*    You found the exit! *\n";
+
+            std::cout << "\nPress any key to exit...\n";
+            std::cin.ignore();
+            std::cin.get();
             break;
         }
-
-        // 9) update turn counters
         updateTurnCounters();
     }
 }
@@ -87,7 +83,6 @@ void GameManager::handlePlayerMove(char input) {
         case 'd': newX++; break;
         default: return;
     }
-
     map_.move(x, y, newX, newY);
 }
 
@@ -95,7 +90,6 @@ void GameManager::handleWeaponUse(char input) {
     Player* player = map_.getPlayer();
     
     if (input == 'e') {
-        // EMP
         if (player->useWeapon(WeaponType::EMP)) {
             useEMP();
             std::cout << "EMP pulse activated! Cameras in 1-block radius deactivated for 2 turns.\n";
@@ -103,7 +97,6 @@ void GameManager::handleWeaponUse(char input) {
             std::cout << "No EMP ammo remaining!\n";
         }
     } else if (input == 'f') {
-        // Flashbang
         if (player->useWeapon(WeaponType::FLASHBANG)) {
             useFlashbang();
             std::cout << "Flashbang deployed! Guards stunned for 4 turns.\n";
@@ -116,7 +109,6 @@ void GameManager::handleWeaponUse(char input) {
 void GameManager::useEMP() {
     auto [px, py] = map_.getPlayer()->getPosition();
     
-    // Check all rooms in 1-block radius
     for (int dy = -1; dy <= 1; dy++) {
         for (int dx = -1; dx <= 1; dx++) {
             int x = px + dx;
@@ -126,7 +118,7 @@ void GameManager::useEMP() {
             if (room) {
                 Camera* camera = dynamic_cast<Camera*>(room);
                 if (camera) {
-                    camera->deactivate(2);
+                    camera->deactivate(4);
                 }
             }
         }
@@ -136,7 +128,6 @@ void GameManager::useEMP() {
 void GameManager::useFlashbang() {
     auto [px, py] = map_.getPlayer()->getPosition();
     
-    // Stun all guards in 1-block radius
     for (int dy = -1; dy <= 1; dy++) {
         for (int dx = -1; dx <= 1; dx++) {
             int x = px + dx;
@@ -154,7 +145,6 @@ void GameManager::useFlashbang() {
 }
 
 void GameManager::updateTurnCounters() {
-    // Update all cameras
     for (int y = 0; y < 7; y++) {
         for (int x = 0; x < 7; x++) {
             Room* room = map_.getRoom(x, y);
@@ -167,7 +157,6 @@ void GameManager::updateTurnCounters() {
         }
     }
     
-    // Update all guards
     for (int y = 0; y < 7; y++) {
         for (int x = 0; x < 7; x++) {
             Character* character = map_.getCharacter(x, y);
@@ -185,6 +174,23 @@ void GameManager::displayAmmo() {
     Player* player = map_.getPlayer();
     std::cout << "Ammo - EMP: " << player->getEmpAmmo() 
               << ", Flashbang: " << player->getFlashbangAmmo() << "\n";
+}
+
+void GameManager::printRoomMap() {
+    std::cout << "\n=== ROOM MAP (DEBUG) ===\n";
+    for (int y = 0; y < 7; y++) {
+        for (int x = 0; x < 7; x++) {
+            Room* room = map_.getRoom(x, y);
+            if (room) {
+                room->print();
+            } else {
+                std::cout << "?";
+            }
+            std::cout << " ";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "========================\n\n";
 }
 
 bool GameManager::checkWin() {
@@ -253,7 +259,6 @@ void GameManager::moveGuards() {
     }
 
     for (Guard* guard : guards) {
-        // Skip stunned guards
         if (guard->isStunned()) {
             continue;
         }
@@ -305,5 +310,8 @@ char GameManager::getPlayerInput() {
     char input;
     std::cout << "Move (WASD) or use weapon (E=EMP, F=Flashbang, Q=Quit): ";
     std::cin >> input;
+    
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    
     return tolower(input);
 }

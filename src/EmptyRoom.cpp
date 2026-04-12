@@ -4,11 +4,13 @@
 
 #include "EmptyRoom.h"
 
+#include <iostream>
+
 EmptyRoom::EmptyRoom() {}
 
 void EmptyRoom::activate(Map& map) {}
 
-void EmptyRoom::print() const {}
+void EmptyRoom::print() const {std::cout<<".";}
 
 void EmptyRoom::setPosition(int x, int y) {}
 

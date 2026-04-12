@@ -11,7 +11,7 @@ Camera::Camera() : deactivatedTurns_(0) {}
 
 void Camera::activate(Map& map) {
     if (deactivatedTurns_ > 0) {
-        return; // Camera is deactivated
+        return;
     }
     
     Player* player = map.getPlayer();
@@ -22,7 +22,7 @@ void Camera::activate(Map& map) {
     map.setAlert(x, y);
 }
 
-void Camera::print() const {}
+void Camera::print() const {std::cout<<"C";}
 
 void Camera::setPosition(int x, int y) {}
 

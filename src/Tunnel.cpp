@@ -20,7 +20,7 @@ Tunnel* Tunnel::getExit() const {
     return exit;
 }
 
-void Tunnel::print() const {}
+void Tunnel::print() const {std::cout<<"T";}
 
 void Tunnel::activate(Map& map) {
     Player* player = map.getPlayer();

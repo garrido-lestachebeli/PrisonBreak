@@ -213,7 +213,13 @@ void Map::populateCharacter(int n){
     for (int i = 0; i < n; ++i) {
         auto [x, y] = getRandomEmptyCellCharacterMap();
 
-        if (x == CENTER && y == CENTER) {
+        int distance = abs(x - CENTER) + abs(y - CENTER);
+        if (distance <= 1) {
+            --i;
+            continue;
+        }
+        
+        if (abs(x - CENTER) == 1 && abs(y - CENTER) == 1) {
             --i;
             continue;
         }

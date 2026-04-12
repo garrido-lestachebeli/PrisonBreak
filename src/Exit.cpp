@@ -10,7 +10,7 @@ Exit::Exit() {}
 void Exit::activate(Map& map) {
     std::cout << "You found the exit...\n";
 }
-void Exit::print() const {}
+void Exit::print() const {std::cout<<"E";}
 
 void Exit::setPosition(int x, int y) {}
 
