@@ -1,6 +1,6 @@
-version - C++ 23
+Team:
+  German - Map & Characters
 
-German - Map & Characters
-Fintan – Rooms & ReadMe
+  Fintan – Rooms & ReadMe
 
-No real changes from inital design
+
