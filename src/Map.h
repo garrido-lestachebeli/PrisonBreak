@@ -5,17 +5,15 @@
 #ifndef WUMPUSHUNT_MAP_H
 #define WUMPUSHUNT_MAP_H
 
+class Room;
 
 #include <vector>
-class Room;
 #include "Character.h"
 #include "Player.h"
-
 
 class Map {
 public:
     Map(int aGuards, int bCameras, int cExits, int dTunnelPairs, int empAmmo = 3, int flashbangAmmo = 2);
-
     ~Map();
     Room* getRoom(int x, int y) const;
     Character* getCharacter(int x, int y) const;
@@ -32,7 +30,6 @@ public:
 private:
     bool alertActive_ = false;
     std::pair<int,int> alertPosition_;
-
     void generateRoomMap(int bCameras, int cExits, int dTunnelPairs);
     void generateCharacterMap(int aGuard);
     template <typename T>

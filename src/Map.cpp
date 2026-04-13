@@ -14,7 +14,6 @@
 #include <random>
 #include <vector>
 
-
 /************************************************************
  * Map Constructor
  * ----------------------------------------------------------
@@ -45,8 +44,16 @@ Map::~Map(){
             delete cell;
         }
     }
+    
+    // Delete the Player object
+    delete player;
 }
 
+/************************************************************
+ * Map::print
+ * ----------------------------------------------------------
+ * Displays the current game map with character positions.
+ ************************************************************/
 void Map::print() {
     if (characterMap.empty()) return;
 
@@ -109,7 +116,6 @@ void Map::generateRoomMap(int bCameras, int cExits, int dTunnelPairs){
         roomMap[y].resize(SIZE);
         for (int x = 0; x < SIZE; ++x) {
             roomMap[y][x] = new EmptyRoom();
-            roomMap[y][x]->setPosition(x, y);
         }
     }
 
@@ -197,7 +203,6 @@ void Map::populateRoom(int n){
 
         delete roomMap[y][x];
         roomMap[y][x] = new T();
-        roomMap[y][x]->setPosition(x, y);
     }
 }
 
@@ -253,8 +258,6 @@ void Map::populateTunnelPairs(int n){
         t1->setExit(t2);
         t2->setExit(t1);
 
-        t1->setPosition(x1, y1);
-        t2->setPosition(x2, y2);
 
         delete roomMap[y1][x1];
         delete roomMap[y2][x2];

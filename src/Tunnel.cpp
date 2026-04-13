@@ -3,25 +3,37 @@
 //
 #include <iostream>
 #include "Tunnel.h"
-
-#include "Character.h"
 #include "Map.h"
 
-Tunnel::Tunnel() : exit(nullptr) {
-    this->x = 0;
-    this->y = 0;
-}
+/************************************************************
+ * Tunnel Constructor
+ * ----------------------------------------------------------
+ * Initializes tunnel with null exit and default position.
+ ************************************************************/
+Tunnel::Tunnel() : exit(nullptr) {}
 
+/************************************************************
+ * Tunnel::setExit
+ * ----------------------------------------------------------
+ * Sets the linked exit tunnel for teleportation.
+ ************************************************************/
 void Tunnel::setExit(Tunnel* exitTunnel) {
     exit = exitTunnel;
 }
 
-Tunnel* Tunnel::getExit() const {
-    return exit;
-}
 
+/************************************************************
+ * Tunnel::print
+ * ----------------------------------------------------------
+ * Displays the tunnel character on the map.
+ ************************************************************/
 void Tunnel::print() const {std::cout<<"T";}
 
+/************************************************************
+ * Tunnel::activate
+ * ----------------------------------------------------------
+ * Teleports player to the linked exit tunnel.
+ ************************************************************/
 void Tunnel::activate(Map& map) {
     Player* player = map.getPlayer();
     auto [x, y] = player->getPosition();
@@ -33,6 +45,9 @@ void Tunnel::activate(Map& map) {
     map.move(x, y, tx, ty);
 }
 
-void Tunnel::setPosition(int x2, int y2) {x=x2; y=y2;}
-
+/************************************************************
+ * Tunnel::printPhrase
+ * ----------------------------------------------------------
+ * Displays tunnel detection message to player.
+ ************************************************************/
 void Tunnel::printPhrase() const {std::cout<<"You feel a draft from somewhere..."<<std::endl;}

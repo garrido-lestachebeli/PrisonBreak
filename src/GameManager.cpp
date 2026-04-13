@@ -8,11 +8,28 @@
 #include "Guard.h"
 #include "Camera.h"
 
+/************************************************************
+ * GameManager Constructor
+ * ----------------------------------------------------------
+ * Initializes the game manager with specified ammo amounts
+ * and creates the game map with default configuration.
+ ************************************************************/
 GameManager::GameManager(int empAmmo, int flashbangAmmo) : map_(2, 2, 1, 1, empAmmo, flashbangAmmo), debugMode_(false) {
 }
 
+/************************************************************
+ * GameManager Destructor
+ * ----------------------------------------------------------
+ * Cleans up game manager resources.
+ ************************************************************/
 GameManager::~GameManager() {}
 
+/************************************************************
+ * GameManager::gameplayLoop
+ * ----------------------------------------------------------
+ * Main game loop that handles player input, game state updates,
+ * and win/lose conditions.
+ ************************************************************/
 void GameManager::gameplayLoop() {
     while (true) {
         map_.print();
@@ -68,6 +85,11 @@ void GameManager::gameplayLoop() {
     }
 }
 
+/************************************************************
+ * GameManager::handlePlayerMove
+ * ----------------------------------------------------------
+ * Processes player movement input and updates player position.
+ ************************************************************/
 void GameManager::handlePlayerMove(char input) {
     Player* player = map_.getPlayer();
 
@@ -86,6 +108,11 @@ void GameManager::handlePlayerMove(char input) {
     map_.move(x, y, newX, newY);
 }
 
+/************************************************************
+ * GameManager::handleWeaponUse
+ * ----------------------------------------------------------
+ * Processes weapon usage input and applies weapon effects.
+ ************************************************************/
 void GameManager::handleWeaponUse(char input) {
     Player* player = map_.getPlayer();
     
@@ -106,6 +133,12 @@ void GameManager::handleWeaponUse(char input) {
     }
 }
 
+/************************************************************
+ * GameManager::useEMP
+ * ----------------------------------------------------------
+ * Applies EMP weapon effect to deactivate cameras in
+ * 1-block radius around the player.
+ ************************************************************/
 void GameManager::useEMP() {
     auto [px, py] = map_.getPlayer()->getPosition();
     
@@ -125,6 +158,12 @@ void GameManager::useEMP() {
     }
 }
 
+/************************************************************
+ * GameManager::useFlashbang
+ * ----------------------------------------------------------
+ * Applies flashbang weapon effect to stun guards in
+ * 1-block radius around the player.
+ ************************************************************/
 void GameManager::useFlashbang() {
     auto [px, py] = map_.getPlayer()->getPosition();
     
@@ -144,7 +183,14 @@ void GameManager::useFlashbang() {
     }
 }
 
+/************************************************************
+ * GameManager::updateTurnCounters
+ * ----------------------------------------------------------
+ * Updates turn-based counters for cameras and guards
+ * to handle deactivation and stun durations.
+ ************************************************************/
 void GameManager::updateTurnCounters() {
+    // Update camera deactivation counters
     for (int y = 0; y < 7; y++) {
         for (int x = 0; x < 7; x++) {
             Room* room = map_.getRoom(x, y);
@@ -157,6 +203,7 @@ void GameManager::updateTurnCounters() {
         }
     }
     
+    // Update guard stun counters
     for (int y = 0; y < 7; y++) {
         for (int x = 0; x < 7; x++) {
             Character* character = map_.getCharacter(x, y);
@@ -170,12 +217,23 @@ void GameManager::updateTurnCounters() {
     }
 }
 
+/************************************************************
+ * GameManager::displayAmmo
+ * ----------------------------------------------------------
+ * Displays current ammo counts for EMP and flashbang weapons.
+ ************************************************************/
 void GameManager::displayAmmo() {
     Player* player = map_.getPlayer();
     std::cout << "Ammo - EMP: " << player->getEmpAmmo() 
               << ", Flashbang: " << player->getFlashbangAmmo() << "\n";
 }
 
+/************************************************************
+ * GameManager::printRoomMap
+ * ----------------------------------------------------------
+ * Displays debug room map showing room types instead of
+ * character positions for debugging purposes.
+ ************************************************************/
 void GameManager::printRoomMap() {
     std::cout << "\n=== ROOM MAP (DEBUG) ===\n";
     for (int y = 0; y < 7; y++) {
@@ -193,6 +251,11 @@ void GameManager::printRoomMap() {
     std::cout << "========================\n\n";
 }
 
+/************************************************************
+ * GameManager::checkWin
+ * ----------------------------------------------------------
+ * Checks if player has reached the exit room to win the game.
+ ************************************************************/
 bool GameManager::checkWin() {
     auto [x, y] = map_.getPlayer()->getPosition();
     Room* room = map_.getRoom(x, y);
@@ -200,6 +263,11 @@ bool GameManager::checkWin() {
     return dynamic_cast<Exit*>(room) != nullptr;
 }
 
+/************************************************************
+ * GameManager::checkLose
+ * ----------------------------------------------------------
+ * Checks if player has been caught by a guard to lose the game.
+ ************************************************************/
 bool GameManager::checkLose() {
     auto [px, py] = map_.getPlayer()->getPosition();
 
@@ -223,9 +291,16 @@ bool GameManager::checkLose() {
     return false;
 }
 
+/************************************************************
+ * GameManager::checkSurroundings
+ * ----------------------------------------------------------
+ * Checks adjacent cells for characters and rooms to provide
+ * player with environmental feedback.
+ ************************************************************/
 void GameManager::checkSurroundings() {
     auto [x, y] = map_.getPlayer()->getPosition();
 
+    // Check all four adjacent directions
     int dx[] = {0, 0, -1, 1};
     int dy[] = {-1, 1, 0, 0};
 
@@ -241,6 +316,12 @@ void GameManager::checkSurroundings() {
     }
 }
 
+/************************************************************
+ * GameManager::moveGuards
+ * ----------------------------------------------------------
+ * Moves all guards toward the player or alert position,
+ * respecting stun status and movement rules.
+ ************************************************************/
 void GameManager::moveGuards() {
     auto [px, py] = map_.getPlayer()->getPosition();
 
@@ -249,6 +330,7 @@ void GameManager::moveGuards() {
 
     std::vector<Guard*> guards;
 
+    // Collect all guards on the map
     for (int y = 0; y < rows; y++) {
         for (int x = 0; x < cols; x++) {
             Guard* g = dynamic_cast<Guard*>(map_.getCharacter(x, y));
@@ -259,6 +341,7 @@ void GameManager::moveGuards() {
     }
 
     for (Guard* guard : guards) {
+        // Skip stunned guards
         if (guard->isStunned()) {
             continue;
         }
@@ -306,11 +389,18 @@ void GameManager::moveGuards() {
     map_.clearAlert();
 }
 
+/************************************************************
+ * GameManager::getPlayerInput
+ * ----------------------------------------------------------
+ * Gets and processes player input, clearing the input buffer
+ * to prevent multiple character processing.
+ ************************************************************/
 char GameManager::getPlayerInput() {
     char input;
     std::cout << "Move (WASD) or use weapon (E=EMP, F=Flashbang, Q=Quit): ";
     std::cin >> input;
     
+    // Clear any additional characters from input buffer
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     
     return tolower(input);
