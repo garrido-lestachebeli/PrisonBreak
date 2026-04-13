@@ -66,12 +66,26 @@ void GameManager::gameplayLoop() {
             room->activate(map_);
         }
 
-        if (checkLose()) {std::cout << "You were caught by a guard. Game Over.\n";
-            break;}
+        if (checkLose()) {
+            std::cout << "*         GAME OVER *\n";
+            std::cout << "*    You were caught by a guard! *\n";
+
+            std::cout << "\nPress any key to exit...\n";
+            std::cin.ignore();
+            std::cin.get();
+            break;
+        }
 
         moveGuards();
-        if (checkLose()) {std::cout << "A guard caught you. Game Over.\n";
-            break;}
+        if (checkLose()) {
+            std::cout << "*         GAME OVER *\n";
+            std::cout << "*    A guard caught you! *\n";
+
+            std::cout << "\nPress any key to exit...\n";
+            std::cin.ignore();
+            std::cin.get();
+            break;
+        }
         if (checkWin()) {
             std::cout << "*         VICTORY *\n";
             std::cout << "*    You found the exit! *\n";
