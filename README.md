@@ -71,7 +71,7 @@ To enter debug mode:
 - `GameManager.cpp` - Main game loop and logic
 - `Map.cpp` - Map generation and management
 - `Player.cpp` - Player character and weapons
-- `Guard.cpp` - Enemy AI and movement
+- `Guard.cpp` - Enemy AI and movement  
   Implemented by Fintan:
 - `Exit.cpp` - Win condition room
 - `Camera.cpp` - Detection system
