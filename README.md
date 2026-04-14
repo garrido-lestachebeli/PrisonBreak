@@ -25,7 +25,7 @@ This project uses **Make** as its build system with a Makefile located in the `s
 
 2. **Build the executable:**
    ```bash
-   make all
+   make
    ```
    This compiles all source files and creates the executable named `game.exe` (on Windows) or `game` (on Linux/Unix).
 
@@ -60,35 +60,10 @@ To enter debug mode:
 2. Press the **M key** during gameplay
 3. Debug mode will be toggled on/off (confirmation message will appear)
 
-**Debug mode features:**
-- Displays a room map showing the actual room types (EmptyRoom, Camera, Exit, Tunnel) instead of just character positions
-- Helps with understanding the game layout and testing
-
 ### Game Objective
 - Navigate through the map to find the **Exit** room to win
 - Avoid being caught by **Guards** (causes game over)
 - Use weapons strategically to avoid detection and capture
-
-## Game Changes from Original Design
-
-### Recent Modifications
-1. **Dynamic Map Size**: 
-   - Added configurable map size parameter (default: 11x11)
-   - Changed from hardcoded 7x7 to variable size based on constructor parameter
-
-2. **Enhanced Lose Screen**:
-   - Added formatted "GAME OVER" screen with visual borders
-   - Implemented "Press any key to exit..." functionality matching win screen behavior
-   - Two distinct lose messages for different capture scenarios
-
-3. **Improved Build System**:
-   - Updated to use runtime map size instead of hardcoded constants
-   - Changed `constexpr` to `const` for runtime-calculated values
-
-### Technical Improvements
-- Fixed compiler errors related to `constexpr` variables requiring compile-time constants
-- Updated all hardcoded size references to use the dynamic `mapSize_` member variable
-- Maintained backward compatibility with default map size of 11
 
 ## Source Files Structure
   Implemented by German:
