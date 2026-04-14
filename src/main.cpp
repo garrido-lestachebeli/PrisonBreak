@@ -49,7 +49,16 @@ int main() {
     cout << "============================================\n";
     srand(time(0));
 
-    GameManager game;
+    // Game Configuration - modify these values to change game parameters
+    int nGuards = 2;
+    int kCameras = 2;
+    int bExits = 1;
+    int mTunnelPairs = 1;
+    int empAmmo = 3;
+    int flashbangAmmo = 2;
+    int mapSize = 7;
+
+    GameManager game(nGuards, kCameras, bExits, mTunnelPairs, empAmmo, flashbangAmmo, mapSize);
 
     game.gameplayLoop();
 

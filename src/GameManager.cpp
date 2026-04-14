@@ -11,10 +11,10 @@
 /************************************************************
  * GameManager Constructor
  * ----------------------------------------------------------
- * Initializes the game manager with specified ammo amounts
- * and creates the game map with default configuration.
+ * Initializes the game manager with specified game parameters
+ * and creates the game map with the provided configuration.
  ************************************************************/
-GameManager::GameManager(int empAmmo, int flashbangAmmo) : map_(2, 2, 1, 1, empAmmo, flashbangAmmo), debugMode_(false) {
+GameManager::GameManager(int nGuards, int kCameras, int bExits, int mTunnelPairs, int empAmmo, int flashbangAmmo, int mapSize) : map_(nGuards, kCameras, bExits, mTunnelPairs, empAmmo, flashbangAmmo, mapSize), debugMode_(false) {
 }
 
 /************************************************************
@@ -35,7 +35,7 @@ void GameManager::gameplayLoop() {
         map_.print();
         
         if (debugMode_) {
-            printRoomMap();
+            map_.printRoomMap();
         }
         
         checkSurroundings();
@@ -242,28 +242,6 @@ void GameManager::displayAmmo() {
               << ", Flashbang: " << player->getFlashbangAmmo() << "\n";
 }
 
-/************************************************************
- * GameManager::printRoomMap
- * ----------------------------------------------------------
- * Displays debug room map showing room types instead of
- * character positions for debugging purposes.
- ************************************************************/
-void GameManager::printRoomMap() {
-    std::cout << "\n=== ROOM MAP (DEBUG) ===\n";
-    for (int y = 0; y < 7; y++) {
-        for (int x = 0; x < 7; x++) {
-            Room* room = map_.getRoom(x, y);
-            if (room) {
-                room->print();
-            } else {
-                std::cout << "?";
-            }
-            std::cout << " ";
-        }
-        std::cout << "\n";
-    }
-    std::cout << "========================\n\n";
-}
 
 /************************************************************
  * GameManager::checkWin

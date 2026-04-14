@@ -13,7 +13,7 @@ class Room;
 
 class Map {
 public:
-    Map(int aGuards, int bCameras, int cExits, int dTunnelPairs, int empAmmo = 3, int flashbangAmmo = 2);
+    Map(int aGuards, int bCameras, int cExits, int dTunnelPairs, int empAmmo, int flashbangAmmo, int mapSize);
     ~Map();
     Room* getRoom(int x, int y) const;
     Character* getCharacter(int x, int y) const;
@@ -22,12 +22,14 @@ public:
     std::pair<int,int> getRandomEmptyCellRoomMap() const;
     std::pair<int,int> getRandomEmptyCellCharacterMap() const;
     void print();
+    void printRoomMap();
     std::pair<int,int> getOtherTunnel(int x, int y) ;
     void setAlert(int x, int y) {alertActive_ = true;  alertPosition_ = {x, y}; }
     bool isAlertActive() const {return alertActive_;}
     std::pair<int,int> getAlertPosition() const {return alertPosition_;}
     void clearAlert() {alertActive_ = false;}
 private:
+    int mapSize_;
     bool alertActive_ = false;
     std::pair<int,int> alertPosition_;
     void generateRoomMap(int bCameras, int cExits, int dTunnelPairs);

@@ -10,7 +10,7 @@
 
 class GameManager {
 public:
-    GameManager(int empAmmo = 3, int flashbangAmmo = 2);
+    GameManager(int nGuards, int kCameras, int bExits, int mTunnelPairs, int empAmmo, int flashbangAmmo, int mapSize);
     ~GameManager();
     void gameplayLoop();
 private:
@@ -27,7 +27,6 @@ private:
     void useEMP();
     void useFlashbang();
     void displayAmmo();
-    void printRoomMap();
 };
 
 #endif //WUMPUSHUNT_GAMEMANAGER_H

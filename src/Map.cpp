@@ -20,8 +20,9 @@
  * Initializes the game map by first generating the static
  * room layout, then placing all characters.
  ************************************************************/
-Map::Map(int nGuards, int kCameras, int bExits, int mTunnelPairs, int empAmmo, int flashbangAmmo){
+Map::Map(int nGuards, int kCameras, int bExits, int mTunnelPairs, int empAmmo, int flashbangAmmo, int mapSize){
     player = new Player(empAmmo, flashbangAmmo);
+    mapSize_ = mapSize;
 
     generateRoomMap(kCameras, bExits, mTunnelPairs);
     generateCharacterMap(nGuards);
@@ -74,6 +75,29 @@ void Map::print() {
 }
 
 /************************************************************
+ * Map::printRoomMap
+ * ----------------------------------------------------------
+ * Displays debug room map showing room types instead of
+ * character positions for debugging purposes.
+ ************************************************************/
+void Map::printRoomMap() {
+    std::cout << "\n=== ROOM MAP (DEBUG) ===\n";
+    for (int y = 0; y < mapSize_; y++) {
+        for (int x = 0; x < mapSize_; x++) {
+            Room* room = getRoom(x, y);
+            if (room) {
+                room->print();
+            } else {
+                std::cout << "?";
+            }
+            std::cout << " ";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "========================\n\n";
+}
+
+/************************************************************
  * generateCharacterMap
  * ----------------------------------------------------------
  * Initializes the character grid, places the player in the
@@ -81,8 +105,8 @@ void Map::print() {
  * cells.
  ************************************************************/
 void Map::generateCharacterMap(int nGuards){
-    constexpr int SIZE = 7;
-    constexpr int CENTER = 3;
+    const int SIZE = mapSize_;
+    const int CENTER = mapSize_ / 2;
 
     /* Initialize character grid with nullptrs */
     characterMap.resize(SIZE);
@@ -108,7 +132,7 @@ void Map::generateCharacterMap(int nGuards){
  * then replaces some with Camera, Exit, and Tunnel rooms.
  ************************************************************/
 void Map::generateRoomMap(int bCameras, int cExits, int dTunnelPairs){
-    constexpr int SIZE = 7;
+    const int SIZE = mapSize_;
 
     /* Fill entire map with EmptyRoom objects */
     roomMap.resize(SIZE);
@@ -159,7 +183,7 @@ void Map::move(int x1, int y1, int x2, int y2) {
  * EmptyRoom. Used for placing special room objects.
  ************************************************************/
 std::pair<int,int> Map::getRandomEmptyCellRoomMap() const{
-    constexpr int SIZE = 7;
+    const int SIZE = mapSize_;
 
     while (true) {
         int x = rand() % SIZE;
@@ -178,11 +202,9 @@ std::pair<int,int> Map::getRandomEmptyCellRoomMap() const{
  * cell (nullptr). Used for placing guards.
  ************************************************************/
 std::pair<int,int> Map::getRandomEmptyCellCharacterMap() const{
-    constexpr int SIZE = 7;
-
     while (true) {
-        int x = rand() % SIZE;
-        int y = rand() % SIZE;
+        int x = rand() % mapSize_;
+        int y = rand() % mapSize_;
 
         if (characterMap[y][x] == nullptr) {
             return {x, y};
@@ -213,7 +235,7 @@ void Map::populateRoom(int n){
  * ensuring the player’s starting position is not overwritten.
  ************************************************************/
 void Map::populateCharacter(int n){
-    constexpr int CENTER = 3;
+    const int CENTER = (mapSize_ / 2);
 
     for (int i = 0; i < n; ++i) {
         auto [x, y] = getRandomEmptyCellCharacterMap();
